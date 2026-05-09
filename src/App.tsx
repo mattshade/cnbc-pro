@@ -453,16 +453,39 @@ const TestingResults = () => {
             </ul>
           </div>
           
-          <div 
+          <motion.div 
             onClick={() => setIsScriptOpen(true)}
-            className="group relative rounded-2xl border border-primary/20 bg-primary/5 p-8 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all duration-500 hover:bg-primary/10 hover:border-primary/40 min-h-[250px]"
+            whileHover={{ y: -5, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative rounded-2xl border border-primary/30 bg-primary/5 p-8 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all duration-300 hover:bg-primary/10 hover:border-primary/60 hover:shadow-2xl hover:shadow-primary/20 min-h-[280px]"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background/0 to-background/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-            <FileText className="w-16 h-16 text-primary mb-4 transform group-hover:-translate-y-1 group-hover:scale-105 transition-all duration-500" />
-            <h4 className="text-xl font-bold text-foreground">Moderator Testing Script</h4>
-            <p className="text-sm text-muted-foreground mt-2 font-medium">Click to examine research artifact</p>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-          </div>
+            {/* Animated Glow Background */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            {/* Floating Icon */}
+            <div className="relative z-10 mb-6 p-5 bg-primary/10 rounded-2xl border border-primary/20 group-hover:bg-primary/20 group-hover:border-primary/40 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner">
+              <FileText className="w-12 h-12 text-primary" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full animate-pulse shadow-[0_0_15px_rgba(var(--primary-rgb),0.8)]" />
+            </div>
+
+            <div className="relative z-10 text-center">
+              <h4 className="text-2xl font-bold text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors">Moderator Testing Script</h4>
+              <p className="text-sm text-muted-foreground font-medium opacity-80 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Research Artifact</p>
+            </div>
+
+            {/* View Button Overlay */}
+            <div className="mt-8 relative z-10 flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-full font-bold text-sm transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-lg shadow-primary/25">
+              <span>View Artifact</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </div>
+
+            {/* Decorative Corner Accents */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary/0 group-hover:border-primary/40 transition-all duration-500 m-4 rounded-tl-lg" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary/0 group-hover:border-primary/40 transition-all duration-500 m-4 rounded-br-lg" />
+            
+            {/* Animated Bottom Line */}
+            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+          </motion.div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
