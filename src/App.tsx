@@ -856,7 +856,7 @@ function App() {
       
       {/* Header / Nav */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border h-16 flex items-center justify-between px-6">
-        <a href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+        <a href="https://mattshade.com" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-6 h-6 text-primary">
             <path fill="currentColor" d="M 12 1 L 20 14 L 23 21 L 16 16 L 12 23 L 8 16 L 1 21 L 4 14 Z" />
             <circle cx="12" cy="10.5" r="3.2" fill="#ffffff" />
