@@ -103,7 +103,7 @@ const Hero = () => (
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-16"
+      className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16"
     >
       {[
         { label: 'Company', value: 'CNBC' },
