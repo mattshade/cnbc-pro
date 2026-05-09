@@ -887,6 +887,15 @@ function App() {
           </svg>
           <span className="font-bold text-sm tracking-wide text-foreground">Matt Shade</span>
         </a>
+
+        <nav className="hidden md:flex items-center gap-8">
+          <a href="https://mattshade.com/#projects" className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors uppercase">
+            Case Studies and Projects
+          </a>
+          <a href="https://mattshade.com/#experience" className="text-[10px] font-bold tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors uppercase">
+            Experience
+          </a>
+        </nav>
       </header>
 
       {/* Main Content */}
