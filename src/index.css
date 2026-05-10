@@ -1,54 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --color-background: #0a0a0a;
+  --color-foreground: #ffffff;
+  --color-accent: #c0ff00;
+  --color-accent-dark: #a8e600;
+  --color-surface: #141414;
+  --color-surface-light: #1f1f1f;
+  --color-muted: #888888;
+  --color-border: rgba(255, 255, 255, 0.1);
+  
+  --font-sans: "Inter", "system-ui", "sans-serif";
+  --font-mono: "JetBrains Mono", "monospace";
 }
 
 @layer base {
-  :root {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 98%;
-    --primary: 142 71% 45%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 142 71% 45%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 142 71% 45%;
-    --radius: 0.5rem;
-  }
-}
-
-@layer base {
-  * {
-    border-color: var(--color-border);
-  }
-  html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-feature-settings: "rlig" 1, "calt" 1;
-    overflow-x: hidden;
+    @apply bg-background text-foreground antialiased selection:bg-accent/30 selection:text-accent;
+    font-family: var(--font-sans);
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-6 md:px-12;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60;
+  }
+
+  .glass {
+    @apply bg-surface/50 backdrop-blur-md border border-border;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-accent text-background font-medium rounded-full hover:bg-accent-dark transition-colors duration-200 inline-flex items-center gap-2;
+  }
+
+  .section-padding {
+    @apply py-24 md:py-32;
+  }
+
+  .grid-bg {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1f1f1f;
+  border-radius: 9999px;
+  border: 2px solid #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(136, 136, 136, 0.5);
 }

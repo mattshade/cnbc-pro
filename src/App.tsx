@@ -1,523 +1,680 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion'
 import { 
-  ShieldCheck, 
-  LayoutTemplate,
+  ChevronRight, 
+  Menu, 
+  X, 
+  Layers, 
+  Layout, 
+  Activity, 
+  BookOpen, 
+  Search,
+  ZoomIn,
+  CheckCircle2,
+  FileText,
+  ArrowRight,
+  ShieldCheck,
   Target,
   Users,
-  Search,
-  CheckCircle2,
   Smartphone,
-  LockKeyhole,
-  Move, 
-  ZoomIn, 
-  ZoomOut,
-  FileText,
-  X,
-  ArrowRight
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
-import { Button } from './components/ui/button';
-import { cn } from './lib/utils';
+  LockKeyhole
+} from 'lucide-react'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
-// --- COMPONENTS ---
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
-const ZoomableImage = ({ src, alt, scale = 1.8, allowPan = true }: { src: string, alt: string, scale?: number, allowPan?: boolean }) => {
-  const [isZoomed, setIsZoomed] = useState(false);
+// --- Components ---
+
+const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const navLinks = [
+    { name: 'CASE STUDIES AND PROJECTS', href: 'https://mattshade.com/#projects' },
+    { name: 'EXPERIENCE', href: 'https://mattshade.com/#experience' },
+  ]
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-end">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setIsZoomed(!isZoomed)}
-          className="gap-2 text-xs min-h-11 px-4 touch-manipulation sm:min-h-8 sm:px-3"
+    <nav className={cn(
+      "fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4",
+      isScrolled ? "bg-background/80 backdrop-blur-xl border-b border-border py-3" : "bg-transparent"
+    )}>
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <motion.a
+          href="https://mattshade.com"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-3 group transition-transform duration-300 hover:scale-[1.02]"
         >
-          {isZoomed ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
-          {isZoomed ? 'Zoom Out' : 'Zoom In'}
-        </Button>
-      </div>
-      
-      <div 
-        className={cn(
-          "relative rounded-xl border border-border bg-secondary/20 w-full overflow-hidden transition-all duration-500",
-          isZoomed ? "h-[60vh] md:h-[70vh]" : "h-auto cursor-zoom-in"
-        )}
-        onClick={() => !isZoomed && setIsZoomed(true)}
-      >
-        <div className={cn("w-full h-full flex items-center justify-center origin-center", !isZoomed && "pointer-events-none")}>
-           <motion.img
-             src={src}
-             alt={alt}
-             drag={isZoomed && allowPan}
-             dragConstraints={{ left: -800, right: 800, top: -800, bottom: 800 }}
-             dragElastic={0}
-             whileDrag={{ cursor: "grabbing" }}
-             animate={{ 
-               scale: isZoomed ? scale : 1,
-               x: isZoomed ? undefined : 0,
-               y: isZoomed ? undefined : 0,
-             }}
-             transition={{ duration: 0.3, ease: "easeOut" }}
-             className={cn("w-full max-w-none origin-center", isZoomed && allowPan ? "cursor-grab" : "transition-shadow")}
-             draggable={false}
-           />
-        </div>
-        
-        {isZoomed && allowPan && (
-          <div className="absolute top-4 left-0 right-0 pointer-events-none flex justify-center opacity-100 md:opacity-0 md:hover:opacity-100 transition-opacity z-10">
-            <div className="bg-background/80 backdrop-blur rounded-full px-4 py-2 shadow-xl flex items-center gap-2 max-w-[calc(100%-2rem)]">
-              <Move className="w-4 h-4 shrink-0 text-primary" />
-              <span className="text-xs font-medium text-center">Drag to explore</span>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-6 h-6 text-accent">
+            <path fill="currentColor" d="M 12 1 L 20 14 L 23 21 L 16 16 L 12 23 L 8 16 L 1 21 L 4 14 Z" />
+            <circle cx="12" cy="10.5" r="3.2" fill="#ffffff" />
+            <circle cx="12" cy="10.5" r="1.3" fill="#0a0a0b" />
+          </svg>
+          <span className="text-[16px] font-bold text-[#F3F4F6] tracking-tight whitespace-nowrap uppercase">
+            Matt Shade
+          </span>
+        </motion.a>
 
-// --- SECTIONS ---
-
-const Hero = () => (
-  <section className="min-h-[85vh] sm:min-h-[90vh] flex flex-col justify-center py-12 sm:py-20 relative overflow-hidden">
-    <div className="absolute top-0 right-0 max-w-[100vw] -mr-16 sm:-mr-20 -mt-16 sm:-mt-20 w-[min(600px,100vw)] h-[min(600px,100vw)] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="space-y-6 max-w-4xl"
-    >
-      <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-4">
-        Case Study
-      </div>
-      <h1 className="text-[clamp(1.875rem,7vw,4.5rem)] md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
-        CNBC PRO <span className="text-muted-foreground block mt-2">Subscription Experience</span>
-      </h1>
-      <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl leading-relaxed">
-        Redesigning the premium subscription journey for serious investors. A premium flow designed to reduce friction, clarify value, and help investors subscribe with confidence.
-      </p>
-    </motion.div>
-
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-      className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-12 sm:mt-16"
-    >
-      {[
-        { label: 'Company', value: 'CNBC' },
-        { label: 'Product', value: 'CNBC PRO' },
-        { label: 'Role', value: 'Senior Interactive Designer' },
-        { label: 'Focus', value: 'Subscription UX & Systems' },
-      ].map((meta, i) => (
-        <div key={i} className="flex flex-col space-y-1 border-l border-border pl-3 sm:pl-4 min-w-0">
-          <span className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">{meta.label}</span>
-          <span className="text-xs sm:text-sm font-medium text-foreground leading-snug break-words">{meta.value}</span>
-        </div>
-      ))}
-    </motion.div>
-
-    <motion.div 
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.4 }}
-      className="mt-12 sm:mt-20 relative w-full h-[min(400px,55vh)] sm:h-[400px] md:h-[600px] rounded-2xl border border-border/50 bg-secondary/30 overflow-hidden flex items-center justify-center backdrop-blur-sm"
-    >
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80 z-10" />
-      <img src="/images/6680bb8eace5ea17adeb8278_pro-cover3.webp" alt="CNBC PRO Cover" className="w-full h-full object-cover opacity-80" />
-      <div className="absolute bottom-4 left-4 right-4 sm:bottom-10 sm:left-10 sm:right-auto z-20 max-w-sm mx-auto sm:mx-0">
-        <Card className="bg-background/90 backdrop-blur border-primary/30">
-          <CardContent className="p-3 sm:p-4 flex gap-3 sm:gap-4 items-start">
-            <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-            <p className="text-sm font-medium text-foreground">
-              A premium subscription flow designed to reduce friction, clarify value, and help serious investors subscribe with confidence.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </motion.div>
-  </section>
-);
-
-const ContextSection = () => (
-  <section className="py-12 sm:py-20 border-t border-border">
-    <div className="grid md:grid-cols-2 gap-10 md:gap-16">
-      <div className="space-y-6">
-        <h2 className="text-2xl sm:text-3xl font-bold">Overview & Challenge</h2>
-        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
-          I led the redesign of the Sign In, Sign Up, and Registration processes for CNBC PRO to increase new subscriptions and reduce churn. I began by mapping out the existing user experience and identifying issues. Next, I collaborated with the internal CX team to gather complaints and feedback. Finally, I analyzed premium subscription flows from competitors to inform our decisions and ensure our design was competitive and user-friendly.
-        </p>
-      </div>
-      <div className="space-y-6">
-        <h2 className="text-2xl sm:text-3xl font-bold">The Opportunity</h2>
-        <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
-          From January to March 2020, subscriber numbers rose by 190%, showing strong interest. This led us to enhance our product's value proposition to create an essential daily financial tool and revitalize the PRO subscription. Our goal was to grow subscriptions from 18k to 100k in three years, a 400% increase. We aimed to set CTR and conversion goals, overhaul the technical infrastructure, implement a new identity management system, and streamline the PRO subscription and sign-in process to reduce friction.
-        </p>
-      </div>
-    </div>
-  </section>
-);
-
-const ChallengeCards = () => (
-  <section className="py-12 sm:py-20">
-    <div className="mb-12">
-      <h2 className="text-2xl sm:text-3xl font-bold">CX Feedback & Heuristic Findings</h2>
-      <p className="text-muted-foreground mt-4 max-w-2xl text-base sm:text-lg">
-        I collaborated closely with the CX team to gather insights and identify pain points. Their support was invaluable in understanding user complaints and feedback, which informed our approach to redesigning and enhancing the overall experience.
-      </p>
-    </div>
-    <div className="grid md:grid-cols-3 gap-6 mb-12">
-      {[
-        { title: 'Scattered Value', desc: 'No clear value proposition to the customer. Information was spread over marketing pages and not at the point of purchase.', icon: LayoutTemplate },
-        { title: 'Plan Adjustments', desc: 'Adjusting plan selection during checkout flow was hard for users to see.', icon: Search },
-        { title: 'Dead-ends', desc: 'Users who accidentally went into Sign In could not easily correct to access Sign Up modal.', icon: Users },
-        { title: 'Mobile Degradation', desc: 'Not mobile friendly, forcing an experience that cutoff CTA and pertinent information to the user.', icon: Smartphone },
-        { title: 'Weak Trust', desc: 'Purchase flow abruptly closed, an email was sent but there was not a confirmation of the purchase real-time in the flow.', icon: ShieldCheck },
-        { title: 'Inconsistent UI', desc: 'Existing Subscription flow built on older tech-stack. Look and feel not consistent with design of CNBC.COM, no parity with CNBC app.', icon: Target },
-      ].map((card, i) => (
-        <Card key={i} className="bg-secondary/20 border-border/50 hover:border-primary/50 transition-colors">
-          <CardHeader>
-            <card.icon className="w-8 h-8 text-primary mb-4" />
-            <CardTitle className="text-lg">{card.title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">{card.desc}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-    
-    <div className="mt-16 space-y-16">
-      <div className="space-y-6">
-        <h3 className="text-xl font-bold">Mapping the existing experience</h3>
-        <p className="text-muted-foreground">CNBC Pro user journey flow. Click to zoom and drag to explore the timeline.</p>
-        <ZoomableImage src="/images/667f754f54fd8006e65a8124_pro-flow.png" alt="CNBC Pro user journey flow" scale={1.55} allowPan={true} />
-      </div>
-      <div className="space-y-6">
-        <h3 className="text-xl font-bold">Competitive Analysis</h3>
-        <p className="text-muted-foreground">CNBC Pro competitive analysis. Click to zoom and drag to explore competitors.</p>
-        <ZoomableImage src="/images/667f7b7b00741aee88773dbc_CA-subflows2-p-3200.png" alt="Competitive analysis" scale={2.0} allowPan={true} />
-      </div>
-    </div>
-  </section>
-);
-
-const UserProfiles = () => {
-  const [isPersonaZoomed, setIsPersonaZoomed] = useState(false);
-
-  useEffect(() => {
-    if (isPersonaZoomed) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'auto';
-    return () => { document.body.style.overflow = 'auto'; }
-  }, [isPersonaZoomed]);
-
-  return (
-    <section className="py-12 sm:py-20 border-t border-border">
-      <div className="mb-12">
-        <h2 className="text-2xl sm:text-3xl font-bold">Exploring Pro user profiles: Part 1</h2>
-        <p className="text-muted-foreground mt-4 text-base sm:text-lg">
-          Understanding what drives user interest in PRO was pivotal in optimizing the subscription flow. We explored what attracts users to our product and what they seek. Categories for potential subscriber concepts were identified through a Qualtrics survey sent to 16.5k users. Insights gathered from responses helped shape our subscriber profiles and provided clarity on the investment-related content our audience finds valuable enough to subscribe to.
-        </p>
-      </div>
-
-      <div className="space-y-16">
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold">Jobs to Be Done (JTBD)</h3>
-          <div className="rounded-xl overflow-hidden border border-border bg-secondary/20 p-4">
-             <img src="/images/667f8397f63d48d8d7a3d384_cnbc-pro-jtbd.webp" alt="JTBD" className="w-full h-auto rounded-lg" />
-          </div>
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map((link, i) => (
+            <motion.a
+              key={link.name}
+              href={link.href}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="text-[10px] font-mono font-bold tracking-[0.2em] text-muted hover:text-accent transition-colors uppercase"
+            >
+              {link.name}
+            </motion.a>
+          ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-4">
-            <h3 className="text-2xl font-bold">Susan, the confident investor</h3>
-            <p className="text-muted-foreground">
-              Susan is an established investor who is confident in her investing strategy and approach. She finds value in insights and analysis.
-            </p>
-          </div>
-          <div 
-            className="rounded-xl border border-border bg-secondary/20 p-4 shadow-lg cursor-pointer transition-colors duration-300 hover:border-primary/40 relative z-10 touch-manipulation active:opacity-90"
-            onClick={() => setIsPersonaZoomed(true)}
-          >
-            <motion.img 
-              layoutId="persona-susan"
-              src="/images/667f80580746e7957738e149_susan-profile.webp" 
-              alt="Persona" 
-              className={cn("w-full h-auto rounded-lg origin-center", isPersonaZoomed ? "opacity-0" : "opacity-100")}
-              whileHover={{ scale: isPersonaZoomed ? 1 : 1.02 }}
-            />
-          </div>
-        </div>
+        <button className="md:hidden text-foreground" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? <X /> : <Menu />}
+        </button>
       </div>
 
       <AnimatePresence>
-        {isPersonaZoomed && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-12 cursor-pointer" onClick={() => setIsPersonaZoomed(false)}>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            />
-            <motion.img 
-              layoutId="persona-susan"
-              src="/images/667f80580746e7957738e149_susan-profile.webp" 
-              alt="Persona" 
-              className="w-full max-w-4xl max-h-[min(85dvh,85vh)] h-auto object-contain rounded-xl shadow-2xl relative z-10"
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            />
-          </div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
-};
-
-const SigninFlows = () => (
-  <section className="py-12 sm:py-20 border-t border-border">
-    <div className="mb-12 space-y-6">
-      <h2 className="text-2xl sm:text-3xl font-bold">Sign In and subscription experience flows: Part 2</h2>
-      <p className="text-muted-foreground text-base sm:text-lg">
-        I collaborated closely with the CX team to gather insights and identify pain points. Their support was invaluable in understanding user complaints and feedback, which informed our approach to redesigning and enhancing the overall experience.
-      </p>
-      <div className="bg-primary/5 border-l-4 border-primary p-4 sm:p-6 rounded-r-xl">
-        <ul className="space-y-2 text-base sm:text-lg font-medium">
-          <li>How might we improve our acquisition and retention rates by meeting users where they already are on the web?</li>
-          <li>How might we offer a more seamless payment experience?</li>
-        </ul>
-      </div>
-    </div>
-    
-    <div className="space-y-6">
-      <h3 className="text-xl font-bold">CNBC Entry Points</h3>
-      <p className="text-muted-foreground">
-        Touch points showing the various entry points for the PRO flow. This includes paths for existing users and new users. Blue color represents the flows I focused on and designed.
-      </p>
-      <div className="rounded-xl overflow-hidden border border-border bg-secondary/20 p-4">
-        <img src="/images/667f93c8772202a8a9fab3a7_pro-entry-points.webp" alt="Entry Points" className="w-full h-auto rounded-lg" />
-      </div>
-    </div>
-  </section>
-);
-
-const PrototypeComparison = () => {
-  const [zoomedImage, setZoomedImage] = useState<'A' | 'B' | null>(null);
-
-  useEffect(() => {
-    if (zoomedImage) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'auto';
-    return () => { document.body.style.overflow = 'auto'; }
-  }, [zoomedImage]);
-
-  return (
-    <section className="py-12 sm:py-20 border-t border-border">
-      <div className="mb-12">
-        <h2 className="text-2xl sm:text-3xl font-bold">Conduct A/B testing on two pathways</h2>
-        <p className="text-muted-foreground mt-4 text-base sm:text-lg">
-          We need to consider several critical steps: initial account creation, plan selection, and billing checkout. While this flow is fairly standard, our goal is to establish a seamless process for users. We have identified two prototypes for testing, each taking a different approach to the sign-up process.
-        </p>
-      </div>
-
-      <div className="space-y-20">
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          <div className="space-y-6 order-2 md:order-1">
-            <h3 className="text-2xl font-semibold text-primary">A: One (single) view sign up</h3>
-            <ul className="space-y-4 text-muted-foreground">
-              <li className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                <span><strong>(A.1)</strong> The value prop is laid out clearly for the user with details about the plan, with choice selections between monthly and annual subscriptions.</span>
-              </li>
-              <li className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                <span><strong>(A.2)</strong> The next step includes plan confirmation, account creation and billing in a single view.</span>
-              </li>
-              <li className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                <span><strong>(A.3)</strong> Closing step shows confirmation of the purchase. Users email address and order number provide verification of the purchase.</span>
-              </li>
-            </ul>
-          </div>
-          <div 
-            className="rounded-xl border border-border bg-secondary/20 p-4 order-1 md:order-2 shadow-lg cursor-pointer transition-colors duration-300 hover:border-primary/40 relative z-10 touch-manipulation active:opacity-90"
-            onClick={() => setZoomedImage('A')}
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-surface border-b border-border overflow-hidden"
           >
-            <motion.img 
-              layoutId="prototype-a"
-              src="/images/668030c9c0b2dc0afa4203cf_pro-flow-a.png" 
-              alt="Prototype A" 
-              className={cn("w-full h-auto rounded-lg origin-center", zoomedImage === 'A' ? "opacity-0" : "opacity-100")}
-              whileHover={{ scale: zoomedImage === 'A' ? 1 : 1.02 }}
-            />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          <div 
-            className="rounded-xl border border-border bg-secondary/20 p-4 shadow-lg cursor-pointer transition-colors duration-300 hover:border-primary/40 relative z-10 touch-manipulation active:opacity-90"
-            onClick={() => setZoomedImage('B')}
-          >
-            <motion.img 
-              layoutId="prototype-b"
-              src="/images/668030c9595e54be6df8dd93_pro-flow-b.png" 
-              alt="Prototype B" 
-              className={cn("w-full h-auto rounded-lg origin-center", zoomedImage === 'B' ? "opacity-0" : "opacity-100")}
-              whileHover={{ scale: zoomedImage === 'B' ? 1 : 1.02 }}
-            />
-          </div>
-          <div className="space-y-6">
-            <h3 className="text-2xl font-semibold text-muted-foreground">B: Staggered Sign Up</h3>
-            <ul className="space-y-4 text-muted-foreground">
-              <li className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-muted-foreground shrink-0" />
-                <span><strong>(B.1)</strong> This version first focuses on the Sign Up creation, progress indicators show how many steps the user will encounter.</span>
-              </li>
-              <li className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-muted-foreground shrink-0" />
-                <span><strong>(B.2)</strong> The next step focuses on the plan selection with billing.</span>
-              </li>
-              <li className="flex gap-3">
-                <CheckCircle2 className="w-5 h-5 text-muted-foreground shrink-0" />
-                <span><strong>(B.3)</strong> Closing is more succinct with only an email confirmation.</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {zoomedImage && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-12 cursor-pointer" onClick={() => setZoomedImage(null)}>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            />
-            <motion.img 
-              layoutId={zoomedImage === 'A' ? "prototype-a" : "prototype-b"}
-              src={zoomedImage === 'A' ? "/images/668030c9c0b2dc0afa4203cf_pro-flow-a.png" : "/images/668030c9595e54be6df8dd93_pro-flow-b.png"} 
-              alt={`Prototype ${zoomedImage}`} 
-              className="w-full max-w-4xl max-h-[min(85dvh,85vh)] h-auto object-contain rounded-xl shadow-2xl relative z-10"
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            />
-          </div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
-};
-
-const scriptQuestions = [
-  { id: 1, text: "Open the Design A by clicking on this link:", response: null },
-  { id: 2, text: "You are in an article page that can only be viewed by users with a CNBC PRO subscription account. Sign up for the annual subscription option of CNBC PRO. Please describe what you are seeing and doing.", response: "[Verbal Response]" },
-  { id: 3, text: "How easy was it to understand that there are 2 subscription options?", response: "[5 Point rating scale: Very difficult — Very easy]" },
-  { id: 4, text: "Why did you choose this rating?", response: "[Verbal Response]" },
-  { id: 5, text: "How organized is the layout of the subscription form?", response: "[5 Point rating scale: Very disorganized — Very organized]" },
-  { id: 6, text: "Why did you choose this rating?", response: "[Verbal Response]" },
-  { id: 7, text: "How easy or difficult is it to subscribe?", response: "[5 Point rating scale: Very difficult — Very easy]" },
-  { id: 8, text: "Why did you choose this rating?", response: "[Verbal Response]" },
-  { id: 9, text: "After going through the sign up and payment steps, do you feel like you were able to successfully subscribe to CNBC PRO?", response: "[5 Point rating scale: Yes, absolutely — No, not at all]" },
-  { id: 10, text: "Why did you choose this rating?", response: "[Verbal Response]" }
-];
-
-const wrapUpTasks = [
-  { title: "Wrap Up 1", text: "Which of the designs was most successful in enabling you to complete the stated task of subscribing to CNBC PRO? Why?", response: "[Verbal Response]" },
-  { title: "Wrap Up 2", text: "Is there anything else you would like to add about your experience? Do you have any other feedback, thoughts, concerns, or guidance you would like to share?", response: "[Verbal Response]" },
-];
-
-const TestingResults = () => {
-  const [isScriptOpen, setIsScriptOpen] = useState(false);
-
-  useEffect(() => {
-    if (isScriptOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'auto';
-    return () => { document.body.style.overflow = 'auto'; }
-  }, [isScriptOpen]);
-
-  return (
-    <section className="py-12 sm:py-20">
-      <div className="bg-secondary/10 rounded-3xl p-5 sm:p-8 md:p-12 border border-border">
-        <div className="mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold">Validating our direction: Part 3</h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 mb-12">
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold">Test Participants</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li><strong>Testers:</strong> Financial News Readers</li>
-              <li><strong>Gender:</strong> 4 females and 2 males</li>
-              <li><strong>Age:</strong> 32-69</li>
-              <li><strong>Device:</strong> Desktop / Figma</li>
-            </ul>
-          </div>
-          
-          <motion.div 
-            onClick={() => setIsScriptOpen(true)}
-            whileHover={{ y: -5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="group relative rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all duration-300 hover:bg-primary/10 hover:border-primary/60 hover:shadow-2xl hover:shadow-primary/20 min-h-[240px] sm:min-h-[280px] touch-manipulation active:scale-[0.99]"
-          >
-            {/* Animated Glow Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            {/* Floating Icon */}
-            <div className="relative z-10 mb-6 p-5 bg-primary/10 rounded-2xl border border-primary/20 group-hover:bg-primary/20 group-hover:border-primary/40 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner">
-              <FileText className="w-12 h-12 text-primary" />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full animate-pulse shadow-[0_0_15px_rgba(var(--primary-rgb),0.8)]" />
+            <div className="flex flex-col p-6 gap-4">
+              {navLinks.map(link => (
+                <a 
+                  key={link.name} 
+                  href={link.href} 
+                  className="text-lg font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.name}
+                </a>
+              ))}
             </div>
-
-            <div className="relative z-10 text-center">
-              <h4 className="text-2xl font-bold text-foreground tracking-tight mb-2 group-hover:text-primary transition-colors">Moderator Testing Script</h4>
-              <p className="text-sm text-muted-foreground font-medium opacity-80 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Research Artifact</p>
-            </div>
-
-            {/* View Button Overlay */}
-            <div className="mt-6 sm:mt-8 relative z-10 flex items-center justify-center gap-2 px-6 py-3 min-h-11 bg-primary text-primary-foreground rounded-full font-bold text-sm translate-y-0 opacity-100 md:translate-y-4 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-500 shadow-lg shadow-primary/25">
-              <span>View Artifact</span>
-              <ArrowRight className="w-4 h-4 transition-transform md:group-hover:translate-x-1" />
-            </div>
-
-            {/* Decorative Corner Accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary/0 group-hover:border-primary/40 transition-all duration-500 m-4 rounded-tl-lg" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary/0 group-hover:border-primary/40 transition-all duration-500 m-4 rounded-br-lg" />
-            
-            {/* Animated Bottom Line */}
-            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
           </motion.div>
-        </div>
+        )}
+      </AnimatePresence>
+    </nav>
+  )
+}
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {[
-            { metric: '5 of 6', text: 'Chose the single view style Sign Up' },
-            { metric: '6 of 6', text: 'Preferred the comparison table before moving along' },
-            { metric: '5 of 6', text: 'Liked having a progress bar' },
-          ].map((stat, i) => (
-            <div key={i} className="bg-background rounded-xl p-6 border border-border shadow-sm">
-              <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">{stat.metric}</div>
-              <div className="text-sm text-muted-foreground font-medium">{stat.text}</div>
-            </div>
-          ))}
-        </div>
+const ImageZoom = ({ src, alt, caption }: { src: string, alt: string, caption?: string }) => {
+  const [isOpen, setIsOpen] = useState(false)
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            '“The subscription offerings creates an emotional investment, it generates a response and makes me to want to do it.”',
-            '“I like to have the confirmation, the order number is very helpful in the event I do not receive my email.”',
-            '“I would be less inclined to give my email early in the process.”'
-          ].map((quote, i) => (
-            <div key={i} className="pl-4 border-l-2 border-primary italic text-muted-foreground text-sm">
-              {quote}
-            </div>
-          ))}
+  return (
+    <div className="group relative">
+      <div 
+        className="relative overflow-hidden rounded-xl border border-border cursor-zoom-in bg-surface"
+        onClick={() => setIsOpen(true)}
+      >
+        <img 
+          src={src} 
+          alt={alt} 
+          className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.02]" 
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div className="p-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
+            <ZoomIn className="w-6 h-6" />
+          </div>
         </div>
       </div>
+      {caption && <p className="mt-4 text-[10px] text-muted italic font-mono uppercase tracking-[0.2em]">{caption}</p>}
 
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-6 md:p-12"
+            onClick={() => setIsOpen(false)}
+          >
+            <motion.button 
+              className="absolute top-8 right-8 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              <X className="w-6 h-6 text-white" />
+            </motion.button>
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={src}
+              alt={alt}
+              className="max-w-full max-h-full object-contain shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+const SectionHeader = ({ tag, title, description }: { tag: string, title: string, description?: string }) => (
+  <div className="mb-12">
+    <motion.span 
+      initial={{ opacity: 0, x: -10 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      className="inline-block text-accent font-mono text-[10px] uppercase tracking-[0.3em] mb-4"
+    >
+      // {tag}
+    </motion.span>
+    <motion.h2 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="text-4xl md:text-5xl font-bold mb-6 text-gradient tracking-tight"
+    >
+      {title}
+    </motion.h2>
+    {description && (
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.1 }}
+        className="text-lg text-muted max-w-2xl leading-relaxed"
+      >
+        {description}
+      </motion.p>
+    )}
+  </div>
+)
+
+// --- Main App ---
+
+export default function App() {
+  const [showBackToTop, setShowBackToTop] = useState(false)
+  const [isScriptOpen, setIsScriptOpen] = useState(false)
+  
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  })
+
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 500)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-background text-foreground selection:bg-accent/30 transition-all duration-700">
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-accent z-[60] origin-left"
+        style={{ scaleX }}
+      />
+      
+      <Navbar />
+
+      {/* Back to Top */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-8 right-8 z-50 p-4 bg-surface border border-border rounded-full shadow-2xl hover:bg-accent hover:text-background transition-all"
+          >
+            <ChevronRight className="w-6 h-6 -rotate-90" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center pt-24 overflow-hidden">
+        <div className="absolute inset-0 grid-bg opacity-40" />
+        <div className="absolute top-1/4 -right-24 w-96 h-96 bg-accent/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 -left-24 w-96 h-96 bg-accent/5 rounded-full blur-[120px]" />
+
+        <div className="container-custom relative z-10">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-7">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <span className="inline-block px-3 py-1 bg-accent/10 text-accent rounded-full text-[10px] font-mono font-bold tracking-widest uppercase mb-6 border border-accent/20">
+                  Subscription Experience Case Study
+                </span>
+                <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-[0.95] tracking-tighter">
+                  CNBC PRO <br/>
+                  <span className="text-muted/40">Redesign</span>
+                </h1>
+                <p className="text-xl md:text-2xl text-muted leading-relaxed max-w-xl mb-10">
+                  Redesigning the premium subscription journey for serious investors. A premium flow designed to reduce friction and help investors subscribe with confidence.
+                </p>
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 py-8 border-y border-border">
+                  {[
+                    { label: 'Company', value: 'CNBC' },
+                    { label: 'Service', value: 'Product Design' },
+                    { label: 'Role', value: 'Lead Designer' },
+                    { label: 'Industry', value: 'Media/Finance' },
+                  ].map((stat) => (
+                    <div key={stat.label}>
+                      <p className="text-[10px] uppercase tracking-widest text-muted mb-1 font-mono">{stat.label}</p>
+                      <p className="font-medium text-sm">{stat.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+            <div className="lg:col-span-5 relative">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="relative z-10"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-accent/50 to-transparent blur-md opacity-30" />
+                <img 
+                  src="/images/668030c9c0b2dc0afa4203cf_pro-flow-a.png" 
+                  alt="CNBC PRO Hero" 
+                  className="rounded-2xl border border-border shadow-2xl relative z-10"
+                />
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Context & Challenge */}
+      <section className="section-padding bg-surface/30">
+        <div className="container-custom">
+          <SectionHeader 
+            tag="Context" 
+            title="The Vision for PRO"
+            description="CNBC PRO is the premier subscription service for financial news and analysis. My role was to rethink the entire acquisition funnel to drive conversion and retention."
+          />
+          
+          <div className="grid md:grid-cols-3 gap-8 mb-24">
+            {[
+              { 
+                title: 'Market Lead', 
+                desc: 'CNBC PRO is a market leader in financial news, but the sign-up process was lagging behind modern standards.',
+                icon: <Target className="w-6 h-6 text-accent" />
+              },
+              { 
+                title: 'User Focus', 
+                desc: 'We needed to understand the specific needs of "Susan", our archetype for the confident investor.',
+                icon: <Users className="w-6 h-6 text-accent" />
+              },
+              { 
+                title: 'Modern Stack', 
+                desc: 'Moving from a legacy fragmented system to a cohesive, high-performance subscription model.',
+                icon: <Smartphone className="w-6 h-6 text-accent" />
+              }
+            ].map((item, i) => (
+              <motion.div 
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="p-8 bg-surface border border-border rounded-2xl hover:border-accent/30 transition-colors"
+              >
+                <div className="mb-6">{item.icon}</div>
+                <h3 className="text-xl font-bold mb-4">{item.title}</h3>
+                <p className="text-muted text-sm leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-16 items-center pt-24 border-t border-border">
+            <div className="lg:col-span-5">
+              <SectionHeader 
+                tag="Competitive Analysis" 
+                title="Learning from the Best"
+                description="We analyzed the subscription flows of major financial players to identify patterns that reduce friction and build trust."
+              />
+              <div className="space-y-6 text-muted leading-relaxed">
+                <p>
+                  Analyzing our competitors revealed that transparency in billing and simplicity in account creation were the biggest drivers of conversion.
+                </p>
+                <p>
+                  We focused on flows that felt premium yet accessible, ensuring the user always knew exactly what they were getting and how much they were paying.
+                </p>
+              </div>
+            </div>
+            <div className="lg:col-span-7">
+              <ImageZoom 
+                src="/images/667f7b7b00741aee88773dbc_CA-subflows2-p-3200.png" 
+                alt="Competitive Analysis" 
+                caption="Deep dive into financial subscription patterns"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* User Profiles */}
+      <section className="section-padding">
+        <div className="container-custom">
+          <SectionHeader 
+            tag="User Research" 
+            title="Susan, the Confident Investor"
+            description="Insights gathered from 16.5k users helped shape our subscriber profiles and provided clarity on valuable content."
+          />
+          
+          <div className="grid lg:grid-cols-12 gap-16 items-center mb-24">
+            <div className="lg:col-span-7">
+              <ImageZoom src="/images/667f80580746e7957738e149_susan-profile.webp" alt="Susan Profile" caption="Archetype: The Confident Investor" />
+            </div>
+            <div className="lg:col-span-5">
+              <div className="space-y-8">
+                <div className="p-8 bg-surface border border-border rounded-3xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Users className="w-24 h-24" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-6">Susan's Persona</h3>
+                  <p className="text-muted leading-relaxed mb-6">
+                    Susan is an established investor who is confident in her strategy. She seeks high-level analysis and real-time insights to maintain her edge.
+                  </p>
+                  <ul className="space-y-3 text-sm text-muted">
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-accent rounded-full" />
+                      Values clarity and speed
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-accent rounded-full" />
+                      Needs data-backed analysis
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <SectionHeader 
+            tag="JTBD" 
+            title="Jobs to be Done"
+            description="We identified the core functional and emotional needs of our users to align our redesign goals."
+          />
+          <div className="mb-24">
+             <ImageZoom src="/images/667f8397f63d48d8d7a3d384_cnbc-pro-jtbd.webp" alt="Jobs To Be Done" caption="Mapping the subscription journey to user goals" />
+          </div>
+        </div>
+      </section>
+
+      {/* Entry Points & Flows */}
+      <section className="section-padding bg-surface/30">
+        <div className="container-custom">
+          <SectionHeader 
+            tag="The Journey" 
+            title="Sign In & Subscription Experience"
+            description="Collaborating with CX to identify friction points and map out the seamless transition from reader to subscriber."
+          />
+          
+          <div className="bg-accent/[0.03] border border-accent/20 p-8 md:p-12 rounded-3xl mb-16">
+            <h3 className="text-2xl font-bold mb-8 text-accent italic font-serif">"How might we offer a more seamless payment experience?"</h3>
+            <div className="grid md:grid-cols-2 gap-8 text-muted">
+              <p>We needed to meet users where they already are on the web, reducing the cognitive load of account creation.</p>
+              <p>The goal was to make the barrier to entry as low as possible while maintaining a premium brand experience.</p>
+            </div>
+          </div>
+
+          <ImageZoom 
+            src="/images/667f93c8772202a8a9fab3a7_pro-entry-points.webp" 
+            alt="Entry Points" 
+            caption="Mapping various touchpoints across the CNBC ecosystem" 
+          />
+        </div>
+      </section>
+
+      {/* A/B Testing */}
+      <section className="section-padding">
+        <div className="container-custom">
+          <SectionHeader 
+            tag="Testing" 
+            title="Prototype Comparison"
+            description="We tested two distinct pathways to find the perfect balance between speed and information density."
+          />
+          
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <div className="p-4 bg-accent/10 border border-accent/20 rounded-xl inline-block text-accent text-[10px] font-mono font-bold tracking-widest">PATHWAY A</div>
+              <h3 className="text-3xl font-bold">Single View Sign Up</h3>
+              <p className="text-muted leading-relaxed">
+                A consolidated view that presents value props, account creation, and billing in one smooth sequence.
+              </p>
+              <ul className="space-y-4 pt-4">
+                {[
+                  'Clear plan details and selection',
+                  'Consolidated account & billing',
+                  'Immediate verification feedback'
+                ].map(item => (
+                  <li key={item} className="flex gap-3 text-sm text-muted">
+                    <CheckCircle2 className="w-5 h-5 text-accent shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <ImageZoom src="/images/668030c9c0b2dc0afa4203cf_pro-flow-a.png" alt="Prototype A" />
+            </div>
+            <div className="space-y-6">
+              <div className="p-4 bg-white/5 border border-white/10 rounded-xl inline-block text-muted text-xs font-bold font-mono tracking-widest uppercase">PATHWAY B</div>
+              <h3 className="text-3xl font-bold">Staggered Sign Up</h3>
+              <p className="text-muted leading-relaxed">
+                A multi-step process that focuses on one piece of information at a time to reduce initial cognitive load.
+              </p>
+               <ul className="space-y-4 pt-4">
+                {[
+                  'Progress indicators for clarity',
+                  'Focus on account first, billing second',
+                  'Succinct email-only confirmation'
+                ].map(item => (
+                  <li key={item} className="flex gap-3 text-sm text-muted">
+                    <CheckCircle2 className="w-5 h-5 text-muted shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <ImageZoom src="/images/668030c9595e54be6df8dd93_pro-flow-b.png" alt="Prototype B" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Research Artifact */}
+      <section className="section-padding bg-accent/[0.02]">
+        <div className="container-custom">
+          <div className="grid lg:grid-cols-12 gap-16 items-center">
+            <div className="lg:col-span-5">
+              <SectionHeader 
+                tag="Research" 
+                title="Validating Our Direction"
+                description="We conducted moderated sessions with financial news readers to see which flow resonated most with their mental model."
+              />
+              <div className="grid grid-cols-1 gap-4 mb-8">
+                 {[
+                  { metric: '5 of 6', text: 'Chose the single view style Sign Up' },
+                  { metric: '6 of 6', text: 'Preferred comparison tables' },
+                  { metric: '5 of 6', text: 'Liked having a progress bar' },
+                ].map((stat, i) => (
+                  <div key={i} className="bg-surface border border-border p-6 rounded-2xl">
+                    <div className="text-3xl font-bold text-accent mb-1">{stat.metric}</div>
+                    <div className="text-[10px] font-mono text-muted uppercase tracking-widest">{stat.text}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="lg:col-span-7">
+               <motion.div 
+                onClick={() => setIsScriptOpen(true)}
+                whileHover={{ y: -5 }}
+                className="group relative rounded-3xl border border-accent/20 bg-surface p-12 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all duration-500 hover:border-accent/40"
+              >
+                <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <FileText className="w-16 h-16 text-accent mb-6" />
+                <h4 className="text-2xl font-bold mb-2">Moderator Testing Script</h4>
+                <p className="text-muted text-sm uppercase tracking-[0.2em] mb-8">Research Artifact</p>
+                <div className="px-8 py-3 bg-accent text-background rounded-full font-bold text-sm">
+                  View Full Script
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solution & Brand */}
+      <section className="section-padding">
+        <div className="container-custom">
+          <SectionHeader 
+            tag="The Solution" 
+            title="The End Design"
+            description="Consolidated Single View Sign Up implemented in a seamless modal experience."
+          />
+          
+          <div className="grid md:grid-cols-2 gap-12 mb-32">
+            <div className="space-y-12">
+              <div className="p-10 bg-surface border border-border rounded-3xl">
+                <h3 className="text-2xl font-bold mb-6">Modal Window Experience</h3>
+                <p className="text-muted leading-relaxed">
+                  We chose a modal window to provide a seamless subscription experience. This ensures users can subscribe without interruption, and locked PRO articles unlock immediately.
+                </p>
+              </div>
+              <ImageZoom src="/images/66806fd548f9deebd061c39a_pro-fnl-4.webp" alt="Mobile Optimization" caption="Seamless experience across all breakpoints" />
+            </div>
+            <div className="space-y-12">
+              <ImageZoom src="/images/66806fd3228e181980149dc6_pro-fnl-1.webp" alt="Final Design" caption="Refined billing and account creation" />
+              <div className="p-10 bg-surface border border-border rounded-3xl">
+                <h3 className="text-2xl font-bold mb-6">Cohesive Progression</h3>
+                <p className="text-muted leading-relaxed">
+                   Stepped progression and clear feedback throughout the journey ensures users feel in control and informed.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-16 items-center">
+            <div className="lg:col-span-5">
+              <SectionHeader 
+                tag="Brand System" 
+                title="Architectural Lime"
+                description="Differentiating PRO from standard CNBC blue through a palette that represents growth and premium access."
+              />
+              <p className="text-muted leading-relaxed">
+                The shift to a green-based palette (Growth Green) was designed to create an exclusive look and feel, signaling to the user that they are entering a premier financial space.
+              </p>
+            </div>
+            <div className="lg:col-span-7">
+               <ImageZoom src="/images/66806fd54f8661617a2f8a7b_pro-fnl-2.webp" alt="Brand System" caption="Defined color system for PRO content" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Outcomes */}
+      <section className="section-padding bg-surface/30">
+        <div className="container-custom">
+          <SectionHeader 
+            tag="Impact" 
+            title="Making it Count"
+            description="Tracking performance through hard metrics: Churn, Conversion, and Payment Adoption."
+          />
+          
+          <div className="grid md:grid-cols-2 gap-12 mb-24">
+             <div className="space-y-8">
+               <div className="p-10 bg-surface border border-border rounded-3xl">
+                 <div className="text-5xl font-bold text-accent mb-4">12%</div>
+                 <h4 className="text-xl font-bold mb-2">Conversion Increase</h4>
+                 <p className="text-sm text-muted">Early Q1 data showed a significant bump in successful sign-ups compared to the previous model.</p>
+               </div>
+               <div className="p-10 bg-surface border border-border rounded-3xl">
+                 <div className="text-5xl font-bold text-accent mb-4">23%</div>
+                 <h4 className="text-xl font-bold mb-2">Alternative Payments</h4>
+                 <p className="text-sm text-muted">PayPal and modern payment options quickly became a staple for new daily subscriptions.</p>
+               </div>
+             </div>
+             <ImageZoom src="/images/6680b99e228e1819803e0ad8_pro-funnel.webp" alt="Funnel Analytics" caption="Real-time performance tracking via DOMO" />
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-16 items-center pt-24 border-t border-border">
+             <div className="lg:col-span-7">
+               <ImageZoom src="/images/6680b33f9ca956d2d9f8e62d_pro-gain.webp" alt="Growth" />
+             </div>
+             <div className="lg:col-span-5">
+               <h3 className="text-3xl font-bold mb-6">Long-term Growth</h3>
+               <p className="text-muted leading-relaxed">
+                 By Q3, the model demonstrated sustained growth in both new and active subscribers, proving the durability of the frictionless experience.
+               </p>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Reflection */}
+      <section className="section-padding">
+        <div className="container-custom text-center max-w-4xl mx-auto">
+          <LockKeyhole className="w-16 h-16 text-accent mx-auto mb-12 opacity-50" />
+          <h2 className="text-5xl md:text-7xl font-bold mb-12 tracking-tighter">Lessons Learned</h2>
+          <p className="text-xl text-muted leading-relaxed mb-16">
+            Work on PRO has transitioned to new product initiatives aimed at enhancing the overall value proposition. Identifying areas for further improvement in account creation and billing remains a core focus for the team.
+          </p>
+          <div className="grid md:grid-cols-3 gap-8 text-left">
+            {[
+              { title: 'Optimization', text: 'Potential remains for streamlining the account creation even further.' },
+              { title: 'Flexibility', text: 'The system is now capable of scaling to new product offerings easily.' },
+              { title: 'Insights', text: 'Monitoring the funnel is crucial for identifying long-term bottlenecks.' }
+            ].map(item => (
+              <div key={item.title} className="p-8 bg-surface border border-border rounded-2xl">
+                <h4 className="font-bold mb-3">{item.title}</h4>
+                <p className="text-sm text-muted">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-24 border-t border-border bg-surface/20">
+        <div className="container-custom">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-12">
+            <div className="max-w-md">
+              <h3 className="text-4xl font-bold mb-8 tracking-tighter text-gradient">let's create together!</h3>
+              <a href="mailto:hellomattshade@gmail.com" className="text-xl hover:text-accent transition-colors font-mono tracking-tight">hellomattshade@gmail.com</a>
+            </div>
+            <div className="grid grid-cols-2 gap-x-12 gap-y-4">
+              <a href="https://mattshade.com" className="text-xs uppercase tracking-widest text-muted hover:text-accent">Home</a>
+              <a href="https://mattshade.com/contact" className="text-xs uppercase tracking-widest text-muted hover:text-accent">contact</a>
+              <a href="https://linkedin.com/in/mattshade" className="text-xs uppercase tracking-widest text-muted hover:text-accent">linkedin</a>
+            </div>
+          </div>
+          <div className="mt-24 pt-12 border-t border-border flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-muted">
+            <span>© {new Date().getFullYear()} Matt Shade</span>
+            <span>CNBC PRO REDESIGN</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* Artifact Modal */}
       <AnimatePresence>
         {isScriptOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-12 perspective-1000" onClick={() => setIsScriptOpen(false)}>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-12" onClick={() => setIsScriptOpen(false)}>
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
@@ -529,396 +686,55 @@ const TestingResults = () => {
               initial={{ opacity: 0, y: 20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98, y: 10 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-4xl max-h-[min(85dvh,85vh)] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col z-10"
+              className="relative w-full max-w-4xl max-h-[85vh] bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
+               <div className="flex items-center justify-between p-4 border-b border-border bg-surface-light">
                 <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-sm tracking-wide">UX_RESEARCH_SCRIPT_v2.pdf</span>
+                  <FileText className="w-5 h-5 text-accent" />
+                  <span className="font-mono text-[10px] uppercase tracking-widest">UX_RESEARCH_SCRIPT.pdf</span>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsScriptOpen(false)} className="rounded-full h-11 w-11 min-h-11 min-w-11 sm:h-8 sm:w-8 sm:min-h-8 sm:min-w-8 hover:bg-primary/20 touch-manipulation">
-                  <X className="w-5 h-5 sm:w-4 sm:h-4" />
-                </Button>
+                <button onClick={() => setIsScriptOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                  <X className="w-5 h-5 text-white" />
+                </button>
               </div>
-              <div className="flex-1 overflow-auto p-4 sm:p-8 custom-scrollbar bg-neutral-50 dark:bg-zinc-950 flex justify-center">
-                <div className="w-full max-w-3xl bg-card border border-border/50 shadow-sm rounded-xl p-5 sm:p-8 md:p-12 space-y-8 sm:space-y-10 text-left">
+              <div className="flex-1 overflow-auto p-8 bg-background">
+                <div className="max-w-3xl mx-auto space-y-12">
+                   <div className="border-b border-border pb-8">
+                    <h1 className="text-3xl font-bold mb-2">CNBC PRO Sign Up Flow Test</h1>
+                    <p className="text-accent uppercase tracking-widest text-[10px] font-mono font-bold">// Moderator Script & Methodology</p>
+                  </div>
                   
-                  <div className="border-b border-border pb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 tracking-tight">CNBC PRO Sign Up Flow Test</h1>
-                    <p className="text-primary uppercase tracking-widest text-xs font-bold">Moderator Script & Methodology</p>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-8">
+                  <div className="grid md:grid-cols-2 gap-12">
                     <div className="space-y-4">
-                      <h2 className="text-lg font-bold text-foreground border-l-4 border-primary pl-3">Goal:</h2>
-                      <p className="text-muted-foreground text-sm leading-relaxed">Compare the ease of use of 2 different sign up flows:</p>
-                      <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                        <li>Which enables a user to effectively sign up.</li>
-                        <li>Which creates less sign up friction.</li>
-                      </ul>
+                      <h4 className="text-accent font-mono text-[10px] uppercase">// Goal</h4>
+                      <p className="text-sm text-muted leading-relaxed">Compare ease of use between single-view and staggered sign-up flows.</p>
                     </div>
-
                     <div className="space-y-4">
-                      <h2 className="text-lg font-bold text-foreground border-l-4 border-primary pl-3">Hypothesis:</h2>
-                      <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                        <li>Current sign up flow is fragmented and confusing.</li>
-                        <li>The new flow options are more intuitive and seamless.</li>
-                        <li>The new flows are more scalable and can also accommodate different offerings and payment options.</li>
-                      </ul>
+                      <h4 className="text-accent font-mono text-[10px] uppercase">// Hypothesis</h4>
+                      <p className="text-sm text-muted leading-relaxed">The new flows are more intuitive, scalable, and reduce friction significantly.</p>
                     </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h2 className="text-lg font-bold text-foreground border-l-4 border-primary pl-3">Questions:</h2>
-                    <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
-                      <li>Which design is the most effective in allowing users to sign up and subscribe for PRO?</li>
-                      <li>Are the new flows intuitive?</li>
-                      <li>Is one flow more effective in converting the user than the other?</li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-secondary/30 p-6 rounded-xl border border-primary/10">
-                    <h2 className="text-sm font-bold text-foreground uppercase tracking-wider mb-4">Testing Platform & Targeting</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                      <div><strong className="text-primary block mb-1 text-xs uppercase">Platform:</strong><span className="text-muted-foreground text-sm">Usertesting.com</span></div>
-                      <div><strong className="text-primary block mb-1 text-xs uppercase">Method:</strong><span className="text-muted-foreground text-sm">Qualitative & quantitative</span></div>
-                      <div><strong className="text-primary block mb-1 text-xs uppercase">Participants:</strong><span className="text-muted-foreground text-sm">Panel (6 Desktop)</span></div>
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-border/50">
-                      <strong className="text-primary text-xs uppercase mr-2">Screening criteria:</strong> 
-                      <span className="text-muted-foreground text-sm">General news readers (already created in UserTesting)</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-bold text-foreground">Task Flow</h2>
-                    <p className="text-muted-foreground text-sm">We will have users walk through the following tasks with all 3 homepage designs, then reflect on their experience.</p>
-                    <ul className="list-decimal pl-5 space-y-2 text-sm text-muted-foreground font-medium">
-                      <li>Mock-up of current design will be presented first.</li>
-                      <li>Prototypes A & B will be presented after and randomized for a balanced comparison.</li>
-                    </ul>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-bold text-foreground">Introduction</h2>
-                    <p className="text-foreground text-sm leading-relaxed italic bg-primary/5 p-5 rounded-lg border border-primary/20">
-                      "Today you will be providing feedback on 2 different designs to subscribe to CNBC PRO, which is a premium subscription service offering market insights. Please note that this is a wireframe prototype with very limited functionality. Some of the information, like name and credit card number, might be auto-populated as you progress through the tasks."
-                    </p>
                   </div>
 
                   <div className="space-y-6">
-                    <div className="flex items-end justify-between border-b border-border pb-2">
-                      <h2 className="text-xl font-bold text-foreground">Tasks: Prototypes A & B</h2>
-                      <p className="text-xs text-muted-foreground font-mono">(Randomized via balance comparison)</p>
-                    </div>
-
-                    <div className="space-y-4">
-                      {scriptQuestions.map((q) => (
-                        <div key={q.id} className="bg-secondary/10 p-4 rounded-lg border border-border/50">
-                          <p className="font-medium text-foreground text-sm mb-2"><span className="text-primary mr-2">{q.id}.</span>{q.text}</p>
-                          {q.response && (
-                            <span className="text-xs font-mono text-muted-foreground bg-background px-2 py-1 rounded border border-border/50 inline-block">{q.response}</span>
-                          )}
-                        </div>
-                      ))}
+                    <h4 className="text-accent font-mono text-[10px] uppercase">// Task Questions</h4>
+                    <div className="space-y-4 text-sm text-muted">
+                      <p>1. Open Design A: Sign up for the annual subscription. Describe what you see.</p>
+                      <p>2. How easy was it to understand the 2 options?</p>
+                      <p>3. How organized is the layout?</p>
+                      <p>4. Do you feel you successfully subscribed?</p>
                     </div>
                   </div>
 
-                  <div className="space-y-6 pt-4">
-                    <h2 className="text-xl font-bold text-foreground border-b border-border pb-2">Wrap-up Tasks</h2>
-                    <div className="space-y-4">
-                      {wrapUpTasks.map((t, i) => (
-                        <div key={i} className="bg-primary/5 p-4 rounded-lg border border-primary/20">
-                          <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-2">{t.title}</h3>
-                          <p className="font-medium text-foreground text-sm mb-3">{t.text}</p>
-                          <span className="text-xs font-mono text-muted-foreground bg-background px-2 py-1 rounded border border-border/50 inline-block">{t.response}</span>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="p-8 bg-surface border border-accent/20 rounded-xl">
+                    <p className="italic text-sm leading-relaxed">"The subscription offerings create an emotional investment... I like to have the confirmation."</p>
                   </div>
-
                 </div>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-    </section>
-  );
-};
-
-const FinalSolution = () => (
-  <section className="py-12 sm:py-20">
-    <div className="mb-12">
-      <h2 className="text-2xl sm:text-3xl font-bold">End design: Part 4</h2>
-      <p className="text-muted-foreground mt-4 max-w-2xl text-base sm:text-lg">
-        Based on our testing results, we decided to implement a consolidated Single View Sign Up for PRO Subscribe. Moving forward, we will continue to gather and incorporate user feedback to refine this approach. Our next objective was to define the distinct look and feel of PRO, distinguishing it from the standard CNBC product.
-      </p>
     </div>
-    
-    <div className="space-y-20">
-      <div className="grid md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold">Modal Window Experience</h3>
-          <p className="text-muted-foreground">
-            We chose a modal window to provide a seamless subscription experience. This ensures users can subscribe without interruption, and locked PRO articles unlock immediately upon purchase, allowing continuous reading.
-          </p>
-        </div>
-        <div className="rounded-xl overflow-hidden border border-border p-4 bg-secondary/20">
-          <img src="/images/66806fd3228e181980149dc6_pro-fnl-1.webp" alt="Modal Screen" className="w-full h-auto rounded-lg" />
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-8 items-center">
-        <div className="rounded-xl overflow-hidden border border-border p-4 bg-secondary/20">
-          <img src="/images/66806fd548f9deebd061c39a_pro-fnl-4.webp" alt="Mobile Examples" className="w-full h-auto rounded-lg" />
-        </div>
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold">Mobile Optimization</h3>
-          <p className="text-muted-foreground">
-            Incorporating all of our feedback from our users and applying our guiding principles stated earlier. Our mobile version had to be flexible and clearly provide all the benefits of our value prop.
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-6 text-center">
-        <h3 className="text-xl font-bold">Cohesive Modals</h3>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          These modals featured stepped progression and confirmation, focusing on providing feedback to the user throughout the journey.
-        </p>
-        <div className="rounded-xl overflow-hidden border border-border p-4 bg-secondary/20">
-          <img src="/images/66806fd4205ea4d50df00480_pro-fnl-3.webp" alt="Cohesive Modals" className="w-full h-auto rounded-lg" />
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-const BrandSystem = () => {
-  const [zoomedImage, setZoomedImage] = useState(false);
-
-  useEffect(() => {
-    if (zoomedImage) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'auto';
-    return () => { document.body.style.overflow = 'auto'; }
-  }, [zoomedImage]);
-
-  return (
-    <section className="py-12 sm:py-20 border-t border-border">
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-        <div className="space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-bold">Brand Style</h2>
-          <p className="text-muted-foreground text-base sm:text-lg">
-            Color system for PRO themed content was designed to create an exclusive look and feel and to differentiate itself from the standard CNBC blue. The green represents growth and rebirth, something we want to emphasize with our premium content that gives our customer a financial edge.
-          </p>
-        </div>
-        <div 
-          className="rounded-xl border border-border p-4 bg-secondary/10 shadow-lg cursor-pointer transition-colors duration-300 hover:border-primary/40 relative z-10 touch-manipulation active:opacity-90"
-          onClick={() => setZoomedImage(true)}
-        >
-          <motion.img 
-            layoutId="pro-styleguide"
-            src="/images/66806fd54f8661617a2f8a7b_pro-fnl-2.webp" 
-            alt="Brand Style" 
-            className={cn("w-full h-auto rounded-lg origin-center", zoomedImage ? "opacity-0" : "opacity-100")}
-            whileHover={{ scale: zoomedImage ? 1 : 1.02 }}
-          />
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {zoomedImage && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-12 cursor-pointer" onClick={() => setZoomedImage(false)}>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            />
-            <motion.img 
-              layoutId="pro-styleguide"
-              src="/images/66806fd54f8661617a2f8a7b_pro-fnl-2.webp" 
-              alt="Brand Style Zoomed" 
-              className="w-full max-w-5xl max-h-[min(85dvh,85vh)] h-auto object-contain rounded-xl shadow-2xl relative z-10"
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            />
-          </div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
-};
-
-const PaymentScaling = () => {
-  const [zoomedImage, setZoomedImage] = useState(false);
-
-  useEffect(() => {
-    if (zoomedImage) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'auto';
-    return () => { document.body.style.overflow = 'auto'; }
-  }, [zoomedImage]);
-
-  return (
-    <section className="py-12 sm:py-20 border-t border-border">
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-        <div 
-          className="rounded-xl border border-border p-4 bg-secondary/10 shadow-lg cursor-pointer transition-colors duration-300 hover:border-primary/40 relative z-10 touch-manipulation active:opacity-90"
-          onClick={() => setZoomedImage(true)}
-        >
-          <motion.img 
-            layoutId="pro-payments"
-            src="/images/66806fd5058fac246c9b2ef6_pro-fnl-5.webp" 
-            alt="Scaling Payments" 
-            className={cn("w-full h-auto rounded-lg origin-center", zoomedImage ? "opacity-0" : "opacity-100")}
-            whileHover={{ scale: zoomedImage ? 1 : 1.02 }}
-          />
-        </div>
-        <div className="space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-bold">Scaling Payments</h2>
-          <p className="text-muted-foreground text-base sm:text-lg">
-            As part of achieving our goals we needed to offer additional payments options. Scaling payment options will increase conversion rates, offer a faster process and provide even less friction for our users at this stage. We defined a success metric of having 10% of new subscribers complete a purchase using PayPal or ApplePay.
-          </p>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {zoomedImage && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-12 cursor-pointer" onClick={() => setZoomedImage(false)}>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            />
-            <motion.img 
-              layoutId="pro-payments"
-              src="/images/66806fd5058fac246c9b2ef6_pro-fnl-5.webp" 
-              alt="Scaling Payments Zoomed" 
-              className="w-full max-w-5xl max-h-[min(85dvh,85vh)] h-auto object-contain rounded-xl shadow-2xl relative z-10"
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            />
-          </div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
-};
-
-const Outcomes = () => (
-  <section className="py-16 sm:py-24 border-t border-border">
-    <div className="mb-10 sm:mb-16">
-      <h2 className="text-2xl sm:text-4xl font-bold">Making it count: Part 5</h2>
-      <p className="text-muted-foreground mt-4 max-w-3xl text-base sm:text-lg">
-        To quantify the value of the subscription redesign and objectively evaluate the project's success, we will track key metrics. Our next steps include monitoring the performance of the new and improved subscription flow, specifically focusing on churn rates, conversion rates, and the use of additional payment options. By refining our Subscriptions and Sign Up/Sign In flows, we can concentrate on enhancing our PRO product offerings.
-      </p>
-    </div>
-
-    <div className="space-y-20">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div className="space-y-8">
-          <h3 className="text-2xl font-bold">Q1 '21 Analytics</h3>
-          <p className="text-muted-foreground">
-            As of now, it's still early in the quarter, but the data looks very promising. Demo analytics indicate a 12% increase in conversions compared to the previous month. Additionally, PayPal users account for approximately 23% of daily subscription payments.
-          </p>
-        </div>
-        <div className="rounded-xl overflow-hidden border border-border p-4 bg-secondary/20">
-          <img src="/images/6680b99e228e1819803e0ad8_pro-funnel.webp" alt="DOMO Funnel Report" className="w-full h-auto rounded-lg" />
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div className="rounded-xl overflow-hidden border border-border p-4 bg-secondary/20">
-          <img src="/images/6680b33f9ca956d2d9f8e62d_pro-gain.webp" alt="PRO Engagement Increase" className="w-full h-auto rounded-lg" />
-        </div>
-        <div className="space-y-8">
-          <h3 className="text-2xl font-bold">Q3 Update</h3>
-          <p className="text-muted-foreground">
-            The performance of the CNBC PRO subscription model has improved greatly within the past year of 2021 with new and active subscribers. More users are successfully entering the subscribe flow and making their purchase to the PRO product. That critical second conversion step is retaining new subscribers.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-const Reflection = () => (
-  <section className="py-12 sm:py-20 border-t border-border">
-    <div className="max-w-3xl mx-auto text-center space-y-8">
-      <LockKeyhole className="w-12 h-12 text-primary mx-auto mb-6 opacity-80" />
-      <h2 className="text-2xl sm:text-3xl font-bold">Reflection</h2>
-      <div className="text-base sm:text-lg leading-relaxed text-muted-foreground text-left space-y-4">
-        <p>Work on PRO has transitioned to new product initiatives aimed at enhancing the overall value proposition for its subscribers.</p>
-        <p>During my tenure, I monitored the funnel of the new subscription flow and identified areas for further improvement. I believe there remains potential for optimizing the account creation process and implementing billing enhancements to streamline the user experience.</p>
-      </div>
-    </div>
-  </section>
-);
-
-
-// --- MAIN APP ---
-
-const sections = [
-  { id: 'hero', component: Hero },
-  { id: 'context', component: ContextSection },
-  { id: 'challenge', component: ChallengeCards },
-  { id: 'profiles', component: UserProfiles },
-  { id: 'signinflows', component: SigninFlows },
-  { id: 'exploration', component: PrototypeComparison },
-  { id: 'testing', component: TestingResults },
-  { id: 'solution', component: FinalSolution },
-  { id: 'brand', component: BrandSystem },
-  { id: 'payments', component: PaymentScaling },
-  { id: 'outcomes', component: Outcomes },
-  { id: 'reflection', component: Reflection },
-];
-
-function App() {
-  return (
-    <div className="min-h-screen overflow-x-hidden transition-all duration-500">
-      
-      {/* Header / Nav */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border pt-[env(safe-area-inset-top)]">
-        <div className="flex h-16 items-center justify-between px-4 sm:px-6 max-w-[100vw]">
-        <a href="https://mattshade.com" className="flex min-h-11 min-w-0 items-center gap-2.5 hover:opacity-80 transition-opacity touch-manipulation rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-6 h-6 text-primary">
-            <path fill="currentColor" d="M 12 1 L 20 14 L 23 21 L 16 16 L 12 23 L 8 16 L 1 21 L 4 14 Z" />
-            <circle cx="12" cy="10.5" r="3.2" fill="#ffffff" />
-            <circle cx="12" cy="10.5" r="1.3" fill="#0a0a0b" />
-          </svg>
-          <span className="font-bold text-sm tracking-wide text-foreground">Matt Shade</span>
-        </a>
-
-        <nav className="flex items-center gap-3 sm:gap-6 md:gap-8 shrink-0">
-          <a href="https://mattshade.com/#projects" className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors uppercase py-2 px-1 -mx-1 touch-manipulation rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <span className="hidden md:inline">Case Studies and Projects</span>
-            <span className="md:hidden">Projects</span>
-          </a>
-          <a href="https://mattshade.com/#experience" className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] sm:tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors uppercase py-2 px-1 -mx-1 touch-manipulation rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            Experience
-          </a>
-        </nav>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="pt-[calc(4rem+env(safe-area-inset-top))] max-w-6xl mx-auto px-4 sm:px-6 pb-[env(safe-area-inset-bottom)]">
-        <div className="space-y-12">
-          {sections.map((section) => (
-            <div key={section.id} id={section.id}>
-              <section.component />
-            </div>
-          ))}
-        </div>
-      </main>
-
-      {/* Standard Footer */}
-      <footer className="border-t border-border py-10 sm:py-12 mt-16 sm:mt-20 pb-[max(2.5rem,env(safe-area-inset-bottom))] text-center text-muted-foreground text-sm">
-        <p>© {new Date().getFullYear()} Matt Shade</p>
-      </footer>
-    </div>
-  );
+  )
 }
-
-export default App;
