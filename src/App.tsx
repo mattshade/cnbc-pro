@@ -4,16 +4,9 @@ import {
   ChevronRight, 
   Menu, 
   X, 
-  Layers, 
-  Layout, 
-  Activity, 
-  BookOpen, 
-  Search,
   ZoomIn,
   CheckCircle2,
   FileText,
-  ArrowRight,
-  ShieldCheck,
   Target,
   Users,
   Smartphone,
@@ -27,7 +20,6 @@ function cn(...inputs: ClassValue[]) {
 }
 
 // --- Components ---
-
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
